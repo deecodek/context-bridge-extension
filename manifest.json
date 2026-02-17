@@ -1,14 +1,16 @@
 {
   "manifest_version": 3,
   "name": "AI Bridge — Universal Context Relay",
-  "version": "1.0.0",
-  "description": "Seamlessly continue AI conversations across ChatGPT, Claude, Gemini, and Perplexity without losing context.",
+  "version": "2.0.0",
+  "description": "Seamlessly continue AI conversations across ChatGPT, Claude, Gemini, Perplexity, Copilot, Mistral, and HuggingFace with enhanced features.",
   "permissions": [
     "storage",
     "activeTab",
     "scripting",
     "tabs",
-    "alarms"
+    "alarms",
+    "contextMenus",
+    "notifications"
   ],
   "host_permissions": [
     "https://chatgpt.com/*",
@@ -16,7 +18,12 @@
     "https://claude.ai/*",
     "https://gemini.google.com/*",
     "https://www.perplexity.ai/*",
-    "https://generativelanguage.googleapis.com/*"
+    "https://copilot.microsoft.com/*",
+    "https://chat.mistral.ai/*",
+    "https://huggingface.co/chat/*",
+    "https://generativelanguage.googleapis.com/*",
+    "https://api.openai.com/*",
+    "https://api.anthropic.com/*"
   ],
   "background": {
     "service_worker": "background/service-worker.js",
@@ -44,6 +51,21 @@
     {
       "matches": ["https://www.perplexity.ai/*"],
       "js": ["lib/lz-string.js", "content/capture-core.js", "content/providers/perplexity.js"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": ["https://copilot.microsoft.com/*"],
+      "js": ["lib/lz-string.js", "content/capture-core.js", "content/providers/copilot.js"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": ["https://chat.mistral.ai/*"],
+      "js": ["lib/lz-string.js", "content/capture-core.js", "content/providers/mistral.js"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": ["https://huggingface.co/chat/*"],
+      "js": ["lib/lz-string.js", "content/capture-core.js", "content/providers/huggingface.js"],
       "run_at": "document_idle"
     }
   ],
