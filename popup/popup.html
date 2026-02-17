@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Bridge</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="app" id="app">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-left">
+        <div class="logo">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+            <circle cx="5" cy="11" r="3.5" stroke="currentColor" stroke-width="1.5"/>
+            <circle cx="17" cy="5" r="3.5" stroke="currentColor" stroke-width="1.5"/>
+            <circle cx="17" cy="17" r="3.5" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M8.5 11H13.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M8.3 9.5L13.7 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M8.3 12.5L13.7 16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <span class="logo-text">AI Bridge</span>
+      </div>
+      <div class="header-right">
+        <div class="status-dot" id="statusDot"></div>
+        <button class="icon-btn" id="settingsBtn" title="Settings">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M8 10C9.10457 10 10 9.10457 10 8C10 6.89543 9.10457 6 8 6C6.89543 6 6 6.89543 6 8C6 9.10457 6.89543 10 8 10Z" stroke="currentColor" stroke-width="1.4"/>
+            <path d="M13 8C13 7.71 12.97 7.43 12.93 7.16L14.56 5.85L12.56 2.45L10.64 3.18C10.21 2.86 9.73 2.6 9.21 2.42L8.88 0.5H4.88L4.55 2.42C4.03 2.6 3.55 2.86 3.12 3.18L1.2 2.45L-0.8 5.85L0.83 7.16C0.79 7.43 0.76 7.71 0.76 8C0.76 8.29 0.79 8.57 0.83 8.84L-0.8 10.15L1.2 13.55L3.12 12.82C3.55 13.14 4.03 13.4 4.55 13.58L4.88 15.5H8.88L9.21 13.58C9.73 13.4 10.21 13.14 10.64 12.82L12.56 13.55L14.56 10.15L12.93 8.84C12.97 8.57 13 8.29 13 8Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round" transform="translate(1.5,0.5) scale(0.75)"/>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Views -->
+    <div class="views">
+
+      <!-- === MAIN VIEW === -->
+      <div class="view active" id="viewMain">
+        <div class="capture-status" id="captureStatus">
+          <div class="capture-indicator">
+            <span class="pulse-ring"></span>
+            <span class="pulse-dot"></span>
+          </div>
+          <div class="capture-info">
+            <span class="capture-label" id="captureLabel">Listening for conversations...</span>
+            <span class="capture-sublabel" id="captureSubLabel">Open an AI chat to start</span>
+          </div>
+          <button class="capture-control-btn" id="captureControlBtn" title="Start/Stop capturing" style="display:none">
+            <svg class="icon-play" width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <path d="M3 2L11 7L3 12V2Z" fill="currentColor" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/>
+            </svg>
+            <svg class="icon-pause" width="14" height="14" viewBox="0 0 14 14" fill="none" style="display:none">
+              <rect x="3" y="3" width="8" height="8" fill="currentColor" stroke="currentColor" stroke-width="1.2"/>
+            </svg>
+          </button>
+        </div>
+
+        <div class="section-header">
+          <span>Recent Sessions</span>
+          <button class="text-btn" id="clearAllBtn">Clear All</button>
+        </div>
+
+        <div class="sessions-list" id="sessionsList">
+          <div class="empty-state">
+            <div class="empty-icon">
+              <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                <rect x="4" y="8" width="24" height="18" rx="3" stroke="currentColor" stroke-width="1.5"/>
+                <path d="M10 14H22M10 19H18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                <path d="M16 3V8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <p>No sessions yet</p>
+            <span>Visit ChatGPT, Claude, Gemini, or Perplexity to start capturing</span>
+          </div>
+        </div>
+
+        <div class="action-bar">
+          <button class="btn btn-primary" id="transferBtn" disabled>
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <path d="M2 7H12M8 3L12 7L8 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Continue Elsewhere
+          </button>
+        </div>
+      </div>
+
+      <!-- === SESSION DETAILS VIEW === -->
+      <div class="view" id="viewSessionDetails">
+        <div class="view-nav">
+          <button class="back-btn" id="backFromSessionDetails">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M10 12L6 8L10 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Back
+          </button>
+          <span class="view-title">Session Details</span>
+        </div>
+
+        <div class="session-details-header" id="sessionDetailsHeader">
+          <div class="detail-provider-badge" id="detailProviderBadge">GPT</div>
+          <div class="detail-title" id="detailTitle">Session Title</div>
+          <div class="detail-meta" id="detailMeta">12 messages · 2h ago</div>
+        </div>
+
+        <div class="session-stats" id="sessionStats">
+          <div class="stat-item">
+            <div class="stat-value" id="statMessages">0</div>
+            <div class="stat-label">Messages</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" id="statCodeBlocks">0</div>
+            <div class="stat-label">Code Blocks</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" id="statDuration">0m</div>
+            <div class="stat-label">Duration</div>
+          </div>
+        </div>
+
+        <div class="session-controls" id="sessionControls">
+          <button class="btn btn-primary btn-full" id="startSessionBtn">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <path d="M3 2L11 7L3 12V2Z" fill="currentColor" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/>
+            </svg>
+            Start Capturing
+          </button>
+          <button class="btn btn-full btn-stop" id="stopSessionBtn" style="display:none">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <rect x="3" y="3" width="8" height="8" fill="currentColor" stroke="currentColor" stroke-width="1.2"/>
+            </svg>
+            Stop Capturing
+          </button>
+        </div>
+
+        <div class="form-section">
+          <label class="form-label">Messages</label>
+          <div class="messages-list" id="messagesList">
+            <div class="empty-messages">No messages to display</div>
+          </div>
+        </div>
+
+        <button class="btn btn-primary btn-full" id="transferFromDetailsBtn">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <path d="M2 7H12M8 3L12 7L8 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Continue Elsewhere
+        </button>
+      </div>
+
+      <!-- === TRANSFER VIEW === -->
+      <div class="view" id="viewTransfer">
+        <div class="view-nav">
+          <button class="back-btn" id="backFromTransfer">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M10 12L6 8L10 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Back
+          </button>
+          <span class="view-title">Transfer Context</span>
+        </div>
+
+        <div class="session-preview" id="sessionPreview">
+          <div class="preview-provider" id="previewProvider"></div>
+          <div class="preview-title" id="previewTitle"></div>
+          <div class="preview-meta" id="previewMeta"></div>
+        </div>
+
+        <div class="form-section">
+          <label class="form-label">Context Mode</label>
+          <div class="mode-grid" id="modeGrid">
+            <button class="mode-btn active" data-mode="coding">
+              <span class="mode-icon">⌨️</span>
+              <span>Coding</span>
+            </button>
+            <button class="mode-btn" data-mode="debugging">
+              <span class="mode-icon">🐛</span>
+              <span>Debug</span>
+            </button>
+            <button class="mode-btn" data-mode="brainstorming">
+              <span class="mode-icon">💡</span>
+              <span>Ideas</span>
+            </button>
+            <button class="mode-btn" data-mode="documentation">
+              <span class="mode-icon">📝</span>
+              <span>Docs</span>
+            </button>
+            <button class="mode-btn" data-mode="research">
+              <span class="mode-icon">🔬</span>
+              <span>Research</span>
+            </button>
+            <button class="mode-btn" data-mode="general">
+              <span class="mode-icon">💬</span>
+              <span>General</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <label class="form-label">Transfer To</label>
+          <div class="provider-grid" id="providerGrid">
+            <button class="provider-btn" data-provider="chatgpt">
+              <img src="../icons/chatgpt-logo.svg" class="provider-logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+              <div class="provider-fallback" style="display:none">GPT</div>
+              <span>ChatGPT</span>
+            </button>
+            <button class="provider-btn" data-provider="claude">
+              <div class="provider-fallback cld">CLd</div>
+              <span>Claude</span>
+            </button>
+            <button class="provider-btn" data-provider="gemini">
+              <div class="provider-fallback gem">Gem</div>
+              <span>Gemini</span>
+            </button>
+            <button class="provider-btn" data-provider="perplexity">
+              <div class="provider-fallback ppl">Ppl</div>
+              <span>Perplexity</span>
+            </button>
+          </div>
+        </div>
+
+        <button class="btn btn-primary btn-full" id="processBtn">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <path d="M7 1V3M7 11V13M1 7H3M11 7H13M2.93 2.93L4.34 4.34M9.66 9.66L11.07 11.07M11.07 2.93L9.66 4.34M4.34 9.66L2.93 11.07" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+          </svg>
+          Process & Transfer
+        </button>
+      </div>
+
+      <!-- === PROCESSING VIEW === -->
+      <div class="view" id="viewProcessing">
+        <div class="processing-container">
+          <div class="processing-orb">
+            <div class="orb-ring r1"></div>
+            <div class="orb-ring r2"></div>
+            <div class="orb-ring r3"></div>
+            <div class="orb-core">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                <path d="M22 6L12 12L8 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+          </div>
+          <div class="processing-steps">
+            <div class="proc-step" id="step1">
+              <div class="step-dot"></div>
+              <span>Decompressing conversation</span>
+            </div>
+            <div class="proc-step" id="step2">
+              <div class="step-dot"></div>
+              <span>Analyzing with Gemini AI</span>
+            </div>
+            <div class="proc-step" id="step3">
+              <div class="step-dot"></div>
+              <span>Formatting for target AI</span>
+            </div>
+            <div class="proc-step" id="step4">
+              <div class="step-dot"></div>
+              <span>Injecting context</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- === RESULT VIEW === -->
+      <div class="view" id="viewResult">
+        <div class="view-nav">
+          <button class="back-btn" id="backFromResult">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M10 12L6 8L10 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Back
+          </button>
+          <span class="view-title">Transfer Complete</span>
+        </div>
+
+        <div class="result-success" id="resultSuccess">
+          <div class="success-icon">✓</div>
+          <p>Context transferred successfully</p>
+        </div>
+
+        <div class="result-error" id="resultError" style="display:none">
+          <div class="error-icon">✗</div>
+          <p id="errorMessage">Something went wrong</p>
+        </div>
+
+        <div class="summary-box" id="summaryBox">
+          <div class="summary-header">
+            <span>Generated Summary</span>
+            <button class="copy-btn" id="copySummaryBtn">Copy</button>
+          </div>
+          <div class="summary-content" id="summaryContent"></div>
+        </div>
+
+        <button class="btn btn-primary btn-full" id="openTargetBtn">
+          Open in Target AI
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <path d="M2 12L12 2M12 2H6M12 2V8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- === SETTINGS VIEW === -->
+      <div class="view" id="viewSettings">
+        <div class="view-nav">
+          <button class="back-btn" id="backFromSettings">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M10 12L6 8L10 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Back
+          </button>
+          <span class="view-title">Settings</span>
+        </div>
+
+        <div class="settings-section">
+          <div class="settings-label">Gemini API Key</div>
+          <div class="settings-hint">Required for context processing. Get yours at <a href="https://aistudio.google.com/app/apikey" target="_blank">aistudio.google.com</a></div>
+          <div class="api-key-row">
+            <input type="password" class="input" id="apiKeyInput" placeholder="AIza...">
+            <button class="btn btn-sm" id="showKeyBtn">Show</button>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <div class="settings-label">Privacy</div>
+          <div class="toggle-row">
+            <div class="toggle-info">
+              <span>Local storage only</span>
+              <small>All data stays on your device</small>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" id="localOnlyToggle" checked>
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div class="toggle-row">
+            <div class="toggle-info">
+              <span>Auto-capture on page load</span>
+              <small>Begin capturing when AI site opens</small>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" id="autoCaptureToggle" checked>
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <div class="settings-label">Storage</div>
+          <div class="storage-bar-wrap">
+            <div class="storage-bar">
+              <div class="storage-fill" id="storageFill"></div>
+            </div>
+            <span class="storage-label" id="storageLabel">Calculating...</span>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <div class="settings-label">About</div>
+          <div class="about-text">
+            <span class="version-tag">v1.0.0</span>
+            AI Bridge — Universal Context Relay<br>
+            <small>Seamlessly continue AI conversations across providers.</small>
+          </div>
+        </div>
+
+        <button class="btn btn-primary btn-full" id="saveSettingsBtn">Save Settings</button>
+      </div>
+
+    </div><!-- /views -->
+  </div>
+
+  <script src="../lib/lz-string.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>
